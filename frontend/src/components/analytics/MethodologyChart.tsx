@@ -31,11 +31,11 @@ const MethodologyChart: React.FC = () => {
         if (dataArray.length === 0) return null;
 
         return {
-            labels: dataArray.map((m: any) => m.methodology),
+            labels: dataArray.map((m: { methodology: string; projectCount: number; nftCount: number; avgCapacity: number; totalCapacity?: number; verifiedCapacity?: number }) => m.methodology),
             datasets: [
                 {
                     label: 'Projects by Methodology',
-                    data: dataArray.map((m: any) => m.projectCount),
+                    data: dataArray.map((m: { methodology: string; projectCount: number; nftCount: number; avgCapacity: number; totalCapacity?: number; verifiedCapacity?: number }) => m.projectCount),
                     backgroundColor: [
                         'rgba(59, 130, 246, 0.8)', // Blue for REC
                         'rgba(34, 197, 94, 0.8)', // Green for REDD
@@ -60,16 +60,16 @@ const MethodologyChart: React.FC = () => {
         if (dataArray.length === 0) return null;
 
         return {
-            labels: dataArray.map((m: any) => m.methodology),
+            labels: dataArray.map((m: { methodology: string; projectCount: number; nftCount: number; avgCapacity: number; totalCapacity?: number; verifiedCapacity?: number }) => m.methodology),
             datasets: [
                 {
                     label: 'Total Capacity (tons)',
-                    data: dataArray.map((m: any) => m.totalCapacity || 0),
+                    data: dataArray.map((m: { methodology: string; projectCount: number; nftCount: number; avgCapacity: number; totalCapacity?: number; verifiedCapacity?: number }) => m.totalCapacity || 0),
                     backgroundColor: 'rgba(34, 197, 94, 0.8)',
                 },
                 {
                     label: 'Verified Capacity (tons)',
-                    data: dataArray.map((m: any) => m.verifiedCapacity || 0),
+                    data: dataArray.map((m: { methodology: string; projectCount: number; nftCount: number; avgCapacity: number; totalCapacity?: number; verifiedCapacity?: number }) => m.verifiedCapacity || 0),
                     backgroundColor: 'rgba(59, 130, 246, 0.8)',
                 },
             ],
@@ -153,7 +153,7 @@ const MethodologyChart: React.FC = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {Array.isArray(methodologyData) && methodologyData.length > 0 ? (
-                            methodologyData.map((item: any, index: number) => (
+                            methodologyData.map((item: { methodology: string; projectCount: number; nftCount: number; avgCapacity: number; totalCapacity?: number; verifiedCapacity?: number }, index: number) => (
                                 <tr key={index}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {item.methodology}

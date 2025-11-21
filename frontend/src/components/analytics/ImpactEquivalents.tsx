@@ -7,10 +7,10 @@ const ImpactEquivalents: React.FC = () => {
 
     const calculateEquivalents = (tonsCO2: number) => {
         return {
-            treesPlanted: Math.round(tonsCO2 * 30), // 1 ton = 30 trees
-            carsOffRoad: (tonsCO2 / 4.6).toFixed(1), // 1 car = 4.6 tons/year
-            homesPowered: (tonsCO2 / 7).toFixed(1), // 1 home = 7 tons/year
-            milesSaved: Math.round(tonsCO2 * 2500), // 1 ton = 2,500 miles
+            treesPlanted: Math.round(tonsCO2 * 30),
+            carsOffRoad: (tonsCO2 / 4.6).toFixed(1),
+            homesPowered: (tonsCO2 / 7).toFixed(1),
+            milesSaved: Math.round(tonsCO2 * 2500),
         };
     };
 
@@ -44,33 +44,27 @@ const ImpactEquivalents: React.FC = () => {
     ];
 
     return (
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg shadow p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        <div className="bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center">
                 Environmental Impact Equivalents
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {items.map((item, index) => (
                     <motion.div
                         key={index}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow"
                     >
-                        <motion.div
-                            className="text-5xl mb-3"
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                        >
-                            {item.icon}
-                        </motion.div>
-                        <div className="text-3xl font-bold text-green-600 mb-2">
+                        <div className="text-2xl mb-2">{item.icon}</div>
+                        <div className="text-xl font-bold text-primary-600 dark:text-primary-400 mb-1">
                             {item.value}
                         </div>
-                        <div className="text-lg font-semibold text-gray-800 mb-1">
+                        <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
                             {item.label}
                         </div>
-                        <div className="text-sm text-gray-500">{item.description}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{item.description}</div>
                     </motion.div>
                 ))}
             </div>

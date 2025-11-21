@@ -1,0 +1,620 @@
+{
+    "name": "REDD+ Reforestation and Forest Conservation Policy",
+    "description": "Policy for verifying and minting carbon credits from reforestation and forest conservation projects",
+    "version": "1.0.0",
+    "topicDescription": "REDD+ Policy for Reforestation Carbon Credits",
+    "policyTag": "REDD_PLUS",
+    "owner": "Standard Registry",
+    "policyRoles": [
+        "Standard Registry",
+        "Project Developer",
+        "Auditor",
+        "Satellite Verifier"
+    ],
+    "schemas": [
+        {
+            "name": "ForestProjectRegistration",
+            "description": "Forest project baseline and registration schema",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "projectName",
+                    "title": "Project Name",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "projectType",
+                    "title": "Project Type",
+                    "type": "enum",
+                    "enum": [
+                        "Reforestation",
+                        "Afforestation",
+                        "Forest Conservation",
+                        "Avoided Deforestation"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "location",
+                    "title": "Project Location",
+                    "type": "object",
+                    "properties": {
+                        "country": {
+                            "type": "string",
+                            "required": true
+                        },
+                        "region": {
+                            "type": "string",
+                            "required": true
+                        },
+                        "coordinates": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "projectArea",
+                    "title": "Project Area (hectares)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 1
+                },
+                {
+                    "name": "baselineData",
+                    "title": "Baseline Forest Data",
+                    "type": "object",
+                    "properties": {
+                        "treeDensity": {
+                            "type": "number",
+                            "description": "Trees per hectare"
+                        },
+                        "averageTreeAge": {
+                            "type": "number",
+                            "description": "Years"
+                        },
+                        "dominantSpecies": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "baselineCarbonStock": {
+                            "type": "number",
+                            "description": "tCO2/hectare"
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "plantingDate",
+                    "title": "Planting/Conservation Start Date",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "expectedSequestrationRate",
+                    "title": "Expected Annual Sequestration (tCO2/hectare/year)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "monitoringPlan",
+                    "title": "Monitoring Plan Description",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "baselineDocuments",
+                    "title": "Baseline Documentation (IPFS Hashes)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ForestMonitoringData",
+            "description": "Forest monitoring and measurement data",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "monitoringPeriodStart",
+                    "title": "Monitoring Period Start",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "monitoringPeriodEnd",
+                    "title": "Monitoring Period End",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "vintageYear",
+                    "title": "Vintage Year",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "name": "fieldMeasurements",
+                    "title": "Field Measurements",
+                    "type": "object",
+                    "properties": {
+                        "treesPlanted": {
+                            "type": "number"
+                        },
+                        "treesSurvived": {
+                            "type": "number"
+                        },
+                        "survivalRate": {
+                            "type": "number",
+                            "description": "Percentage"
+                        },
+                        "averageHeight": {
+                            "type": "number",
+                            "description": "Meters"
+                        },
+                        "averageDiameter": {
+                            "type": "number",
+                            "description": "Centimeters"
+                        },
+                        "samplePlots": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "plotId": {
+                                        "type": "string"
+                                    },
+                                    "treesCount": {
+                                        "type": "number"
+                                    },
+                                    "biomass": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "satelliteData",
+                    "title": "Satellite Imagery Data",
+                    "type": "object",
+                    "properties": {
+                        "imageDate": {
+                            "type": "date"
+                        },
+                        "ndviValue": {
+                            "type": "number",
+                            "description": "Normalized Difference Vegetation Index"
+                        },
+                        "canopyCover": {
+                            "type": "number",
+                            "description": "Percentage"
+                        },
+                        "imageHash": {
+                            "type": "string",
+                            "description": "IPFS hash of satellite image"
+                        }
+                    }
+                },
+                {
+                    "name": "carbonSequestration",
+                    "title": "Carbon Sequestration Data",
+                    "type": "object",
+                    "properties": {
+                        "biomassCarbonStock": {
+                            "type": "number",
+                            "description": "tCO2"
+                        },
+                        "soilCarbonStock": {
+                            "type": "number",
+                            "description": "tCO2"
+                        },
+                        "totalSequestered": {
+                            "type": "number",
+                            "description": "tCO2"
+                        },
+                        "calculationMethod": {
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "evidencePhotos",
+                    "title": "Evidence Photos (IPFS Hashes)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "SatelliteVerification",
+            "description": "Independent satellite verification report",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "verifierName",
+                    "title": "Satellite Verifier Organization",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "verificationDate",
+                    "title": "Verification Date",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "satelliteImagerySource",
+                    "title": "Satellite Imagery Source",
+                    "type": "enum",
+                    "enum": [
+                        "Sentinel-2",
+                        "Landsat",
+                        "Planet Labs",
+                        "Other"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "verifiedCanopyCover",
+                    "title": "Verified Canopy Cover (%)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                {
+                    "name": "verifiedForestArea",
+                    "title": "Verified Forest Area (hectares)",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "name": "changeDetection",
+                    "title": "Change Detection Analysis",
+                    "type": "string"
+                },
+                {
+                    "name": "verificationReport",
+                    "title": "Verification Report (IPFS Hash)",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "ForestAuditReport",
+            "description": "Third-party forest audit report",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "auditorName",
+                    "title": "Auditor Name",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "auditDate",
+                    "title": "Audit Date",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "verifiedCarbonSequestered",
+                    "title": "Verified Carbon Sequestered (tCO2)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "permanenceRisk",
+                    "title": "Permanence Risk Assessment",
+                    "type": "enum",
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "leakageAssessment",
+                    "title": "Leakage Assessment",
+                    "type": "string"
+                },
+                {
+                    "name": "findings",
+                    "title": "Audit Findings",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "approvalStatus",
+                    "title": "Approval Status",
+                    "type": "enum",
+                    "enum": [
+                        "Approved",
+                        "Rejected",
+                        "Conditional"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "bufferPercentage",
+                    "title": "Buffer Pool Percentage",
+                    "type": "number",
+                    "description": "Percentage of credits allocated to buffer pool",
+                    "minimum": 0,
+                    "maximum": 50
+                }
+            ]
+        }
+    ],
+    "policyWorkflow": {
+        "blocks": [
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "init",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "defaultActive": true,
+                "children": [
+                    {
+                        "blockType": "informationBlock",
+                        "tag": "header",
+                        "title": "REDD+ Reforestation Policy",
+                        "description": "This policy manages verification and issuance of carbon credits from reforestation and forest conservation projects."
+                    }
+                ]
+            },
+            {
+                "blockType": "policyRolesBlock",
+                "tag": "choose_role",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "defaultActive": true,
+                "roles": [
+                    {
+                        "name": "Project Developer",
+                        "description": "Entity managing reforestation projects"
+                    },
+                    {
+                        "name": "Auditor",
+                        "description": "Third-party verifier of forest data"
+                    },
+                    {
+                        "name": "Satellite Verifier",
+                        "description": "Remote sensing verification specialist"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "project_developer_container",
+                "permissions": [
+                    "Project Developer"
+                ],
+                "defaultActive": true,
+                "children": [
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "forest_project_registration",
+                        "title": "Register Forest Project",
+                        "description": "Submit forest project baseline and registration",
+                        "schema": "ForestProjectRegistration",
+                        "idType": "DID"
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_forest_registration",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "monitoring_container",
+                "permissions": [
+                    "Project Developer"
+                ],
+                "defaultActive": true,
+                "dependencies": [
+                    "forest_project_registration"
+                ],
+                "children": [
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "forest_monitoring_submission",
+                        "title": "Submit Forest Monitoring Data",
+                        "description": "Submit field measurements and carbon sequestration data",
+                        "schema": "ForestMonitoringData",
+                        "idType": "OWNER"
+                    },
+                    {
+                        "blockType": "calculateContainerBlock",
+                        "tag": "calculate_sequestration",
+                        "inputFields": [
+                            {
+                                "name": "biomassCarbonStock",
+                                "value": "document.credentialSubject.0.carbonSequestration.biomassCarbonStock"
+                            },
+                            {
+                                "name": "soilCarbonStock",
+                                "value": "document.credentialSubject.0.carbonSequestration.soilCarbonStock"
+                            }
+                        ],
+                        "outputFields": [
+                            {
+                                "name": "totalSequestered",
+                                "formula": "biomassCarbonStock + soilCarbonStock"
+                            }
+                        ]
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_monitoring_data",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "satellite_verification_container",
+                "permissions": [
+                    "Satellite Verifier"
+                ],
+                "defaultActive": true,
+                "dependencies": [
+                    "forest_monitoring_submission"
+                ],
+                "children": [
+                    {
+                        "blockType": "documentsSourceAddon",
+                        "tag": "monitoring_source",
+                        "dataType": "vc-documents",
+                        "filters": {
+                            "schema": "ForestMonitoringData"
+                        }
+                    },
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "satellite_verification_submission",
+                        "title": "Submit Satellite Verification",
+                        "description": "Submit remote sensing verification results",
+                        "schema": "SatelliteVerification",
+                        "idType": "DID"
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_satellite_verification",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "auditor_review_container",
+                "permissions": [
+                    "Auditor"
+                ],
+                "defaultActive": true,
+                "dependencies": [
+                    "satellite_verification_submission"
+                ],
+                "children": [
+                    {
+                        "blockType": "documentsSourceAddon",
+                        "tag": "verification_source",
+                        "dataType": "vc-documents"
+                    },
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "forest_audit_submission",
+                        "title": "Submit Forest Audit Report",
+                        "description": "Review all data and submit audit findings",
+                        "schema": "ForestAuditReport",
+                        "idType": "DID"
+                    },
+                    {
+                        "blockType": "calculateContainerBlock",
+                        "tag": "calculate_net_credits",
+                        "inputFields": [
+                            {
+                                "name": "verifiedCarbon",
+                                "value": "document.credentialSubject.0.verifiedCarbonSequestered"
+                            },
+                            {
+                                "name": "bufferPercentage",
+                                "value": "document.credentialSubject.0.bufferPercentage"
+                            }
+                        ],
+                        "outputFields": [
+                            {
+                                "name": "netCredits",
+                                "formula": "verifiedCarbon * (1 - bufferPercentage / 100)"
+                            }
+                        ]
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_forest_audit",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "aggregateDocumentBlock",
+                "tag": "aggregate_forest_verification",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "dataType": "vc-documents",
+                "dependencies": [
+                    "forest_audit_submission"
+                ],
+                "children": [
+                    {
+                        "blockType": "filtersAddon",
+                        "tag": "approval_filter",
+                        "filters": [
+                            {
+                                "field": "document.credentialSubject.0.approvalStatus",
+                                "type": "equal",
+                                "value": "Approved"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "blockType": "mintDocumentBlock",
+                "tag": "mint_forest_credits",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "dependencies": [
+                    "aggregate_forest_verification"
+                ],
+                "tokenId": "${REDD_CARBON_CREDIT_TOKEN_ID}",
+                "rule": "FIRST",
+                "amount": "document.credentialSubject.0.verifiedCarbonSequestered",
+                "accountId": "document.issuer",
+                "accountType": "DID"
+            }
+        ]
+    },
+    "tokenConfig": {
+        "tokenName": "REDD+ Carbon Credit",
+        "tokenSymbol": "REDD-CC",
+        "tokenType": "fungible",
+        "decimals": 2,
+        "initialSupply": 0,
+        "enableAdmin": true,
+        "enableKYC": false,
+        "enableFreeze": false,
+        "enableWipe": true
+    }
+}

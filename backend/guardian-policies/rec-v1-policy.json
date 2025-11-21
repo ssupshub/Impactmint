@@ -1,0 +1,418 @@
+{
+  "name": "REC-v1 Renewable Energy Credits Policy",
+  "description": "Policy for verifying and minting carbon credits from renewable energy projects",
+  "version": "1.0.0",
+  "topicDescription": "REC-v1 Policy for Renewable Energy Carbon Credits",
+  "policyTag": "REC_v1",
+  "owner": "Standard Registry",
+  "policyRoles": [
+    "Standard Registry",
+    "Project Developer",
+    "Auditor"
+  ],
+  "schemas": [
+    {
+      "name": "ProjectRegistration",
+      "description": "Renewable energy project registration schema",
+      "entity": "VC",
+      "fields": [
+        {
+          "name": "projectName",
+          "title": "Project Name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "projectType",
+          "title": "Technology Type",
+          "type": "enum",
+          "enum": ["Solar", "Wind", "Hydro", "Geothermal", "Biomass"],
+          "required": true
+        },
+        {
+          "name": "location",
+          "title": "Project Location",
+          "type": "object",
+          "properties": {
+            "country": { "type": "string", "required": true },
+            "region": { "type": "string", "required": true },
+            "latitude": { "type": "number", "required": true },
+            "longitude": { "type": "number", "required": true }
+          },
+          "required": true
+        },
+        {
+          "name": "installedCapacity",
+          "title": "Installed Capacity (MW)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "commissioningDate",
+          "title": "Commissioning Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "expectedAnnualGeneration",
+          "title": "Expected Annual Generation (MWh)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "gridConnectionDetails",
+          "title": "Grid Connection Details",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "baselineEmissionFactor",
+          "title": "Baseline Emission Factor (tCO2/MWh)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        }
+      ]
+    },
+    {
+      "name": "MRVData",
+      "description": "Measurement, Reporting, and Verification data for renewable energy generation",
+      "entity": "VC",
+      "fields": [
+        {
+          "name": "monitoringPeriodStart",
+          "title": "Monitoring Period Start",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "monitoringPeriodEnd",
+          "title": "Monitoring Period End",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "energyGenerated",
+          "title": "Energy Generated (MWh)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "meterReadings",
+          "title": "Meter Readings",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "date" },
+              "reading": { "type": "number" },
+              "meterSerialNumber": { "type": "string" }
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "emissionFactor",
+          "title": "Grid Emission Factor (tCO2/MWh)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "calculatedEmissionsReduced",
+          "title": "Calculated Emissions Reduced (tCO2)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "evidenceDocuments",
+          "title": "Evidence Documents (IPFS Hashes)",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      ]
+    },
+    {
+      "name": "AuditReport",
+      "description": "Third-party audit report schema",
+      "entity": "VC",
+      "fields": [
+        {
+          "name": "auditorName",
+          "title": "Auditor Name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "auditDate",
+          "title": "Audit Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "verifiedEnergyGeneration",
+          "title": "Verified Energy Generation (MWh)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "verifiedEmissionsReduced",
+          "title": "Verified Emissions Reduced (tCO2)",
+          "type": "number",
+          "required": true,
+          "minimum": 0
+        },
+        {
+          "name": "findings",
+          "title": "Audit Findings",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "recommendations",
+          "title": "Recommendations",
+          "type": "string"
+        },
+        {
+          "name": "approvalStatus",
+          "title": "Approval Status",
+          "type": "enum",
+          "enum": ["Approved", "Rejected", "Conditional"],
+          "required": true
+        },
+        {
+          "name": "auditReportDocument",
+          "title": "Audit Report Document (IPFS Hash)",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "policyWorkflow": {
+    "blocks": [
+      {
+        "blockType": "interfaceContainerBlock",
+        "tag": "init",
+        "permissions": ["Standard Registry"],
+        "defaultActive": true,
+        "children": [
+          {
+            "blockType": "informationBlock",
+            "tag": "header",
+            "title": "REC-v1 Renewable Energy Credits Policy",
+            "description": "This policy manages the verification and issuance of carbon credits from renewable energy projects."
+          }
+        ]
+      },
+      {
+        "blockType": "policyRolesBlock",
+        "tag": "choose_role",
+        "permissions": ["Standard Registry"],
+        "defaultActive": true,
+        "roles": [
+          {
+            "name": "Project Developer",
+            "description": "Entity developing renewable energy projects"
+          },
+          {
+            "name": "Auditor",
+            "description": "Third-party verifier of project data"
+          }
+        ]
+      },
+      {
+        "blockType": "interfaceContainerBlock",
+        "tag": "project_developer_container",
+        "permissions": ["Project Developer"],
+        "defaultActive": true,
+        "children": [
+          {
+            "blockType": "requestVcDocumentBlock",
+            "tag": "project_registration",
+            "title": "Register Renewable Energy Project",
+            "description": "Submit project registration details",
+            "schema": "ProjectRegistration",
+            "idType": "DID",
+            "uiMetaData": {
+              "title": "Project Registration Form",
+              "description": "Please provide detailed information about your renewable energy project"
+            }
+          },
+          {
+            "blockType": "sendToGuardianBlock",
+            "tag": "send_project_registration",
+            "dataType": "vc-documents"
+          }
+        ]
+      },
+      {
+        "blockType": "interfaceStepBlock",
+        "tag": "project_validation",
+        "permissions": ["Standard Registry"],
+        "defaultActive": true,
+        "children": [
+          {
+            "blockType": "documentsSourceAddon",
+            "tag": "project_source",
+            "dataType": "vc-documents",
+            "filters": {
+              "schema": "ProjectRegistration"
+            }
+          },
+          {
+            "blockType": "filtersAddon",
+            "tag": "project_filter",
+            "filters": [
+              {
+                "field": "document.credentialSubject.0.installedCapacity",
+                "type": "number",
+                "operation": "greater",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "blockType": "interfaceContainerBlock",
+        "tag": "mrv_submission_container",
+        "permissions": ["Project Developer"],
+        "defaultActive": true,
+        "dependencies": ["project_registration"],
+        "children": [
+          {
+            "blockType": "requestVcDocumentBlock",
+            "tag": "mrv_data_submission",
+            "title": "Submit MRV Data",
+            "description": "Submit monitoring data for verification",
+            "schema": "MRVData",
+            "idType": "OWNER",
+            "uiMetaData": {
+              "title": "MRV Data Submission",
+              "description": "Submit energy generation and emissions data for the monitoring period"
+            }
+          },
+          {
+            "blockType": "calculateContainerBlock",
+            "tag": "calculate_credits",
+            "inputFields": [
+              {
+                "name": "energyGenerated",
+                "title": "Energy Generated (MWh)",
+                "value": "document.credentialSubject.0.energyGenerated"
+              },
+              {
+                "name": "emissionFactor",
+                "title": "Emission Factor",
+                "value": "document.credentialSubject.0.emissionFactor"
+              }
+            ],
+            "outputFields": [
+              {
+                "name": "calculatedCredits",
+                "title": "Calculated Carbon Credits (tCO2)",
+                "formula": "energyGenerated * emissionFactor"
+              }
+            ]
+          },
+          {
+            "blockType": "sendToGuardianBlock",
+            "tag": "send_mrv_data",
+            "dataType": "vc-documents"
+          }
+        ]
+      },
+      {
+        "blockType": "interfaceContainerBlock",
+        "tag": "auditor_review_container",
+        "permissions": ["Auditor"],
+        "defaultActive": true,
+        "dependencies": ["mrv_data_submission"],
+        "children": [
+          {
+            "blockType": "documentsSourceAddon",
+            "tag": "mrv_source",
+            "dataType": "vc-documents",
+            "filters": {
+              "schema": "MRVData"
+            }
+          },
+          {
+            "blockType": "requestVcDocumentBlock",
+            "tag": "audit_report_submission",
+            "title": "Submit Audit Report",
+            "description": "Review MRV data and submit audit findings",
+            "schema": "AuditReport",
+            "idType": "DID",
+            "presetFields": [
+              {
+                "name": "verifiedEnergyGeneration",
+                "title": "Verified Energy",
+                "value": "document.credentialSubject.0.energyGenerated"
+              }
+            ]
+          },
+          {
+            "blockType": "sendToGuardianBlock",
+            "tag": "send_audit_report",
+            "dataType": "vc-documents"
+          }
+        ]
+      },
+      {
+        "blockType": "aggregateDocumentBlock",
+        "tag": "aggregate_verification",
+        "permissions": ["Standard Registry"],
+        "dataType": "vc-documents",
+        "dependencies": ["audit_report_submission"],
+        "children": [
+          {
+            "blockType": "filtersAddon",
+            "tag": "approval_filter",
+            "filters": [
+              {
+                "field": "document.credentialSubject.0.approvalStatus",
+                "type": "equal",
+                "value": "Approved"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "blockType": "mintDocumentBlock",
+        "tag": "mint_carbon_credits",
+        "permissions": ["Standard Registry"],
+        "dependencies": ["aggregate_verification"],
+        "tokenId": "${CARBON_CREDIT_TOKEN_ID}",
+        "rule": "FIRST",
+        "amount": "document.credentialSubject.0.verifiedEmissionsReduced",
+        "accountId": "document.issuer",
+        "accountType": "DID"
+      },
+      {
+        "blockType": "retirementDocumentBlock",
+        "tag": "retire_credits",
+        "permissions": ["Project Developer"],
+        "tokenId": "${CARBON_CREDIT_TOKEN_ID}",
+        "rule": "FIRST"
+      }
+    ]
+  },
+  "tokenConfig": {
+    "tokenName": "REC Carbon Credit",
+    "tokenSymbol": "REC-CC",
+    "tokenType": "fungible",
+    "decimals": 2,
+    "initialSupply": 0,
+    "enableAdmin": true,
+    "enableKYC": false,
+    "enableFreeze": false,
+    "enableWipe": true
+  }
+}

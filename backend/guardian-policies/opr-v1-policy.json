@@ -1,0 +1,666 @@
+{
+    "name": "OPR-v1 Ocean Plastic Removal Policy",
+    "description": "Policy for verifying and minting carbon credits from ocean plastic removal and prevention of incineration",
+    "version": "1.0.0",
+    "topicDescription": "OPR-v1 Policy for Ocean Plastic Removal Carbon Credits",
+    "policyTag": "OPR_v1",
+    "owner": "Standard Registry",
+    "policyRoles": [
+        "Standard Registry",
+        "Collection Organization",
+        "Auditor",
+        "Verification Partner"
+    ],
+    "schemas": [
+        {
+            "name": "PlasticRemovalProjectRegistration",
+            "description": "Ocean plastic removal project registration",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "projectName",
+                    "title": "Project Name",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "organizationType",
+                    "title": "Organization Type",
+                    "type": "enum",
+                    "enum": [
+                        "NGO",
+                        "Social Enterprise",
+                        "Government",
+                        "Private Company"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "operatingRegions",
+                    "title": "Operating Regions",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "country": {
+                                "type": "string"
+                            },
+                            "coastalArea": {
+                                "type": "string"
+                            },
+                            "coordinates": {
+                                "type": "object",
+                                "properties": {
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "collectionMethods",
+                    "title": "Collection Methods",
+                    "type": "array",
+                    "items": {
+                        "type": "enum",
+                        "enum": [
+                            "Beach Cleanup",
+                            "Ocean Cleanup",
+                            "River Interception",
+                            "Coastal Cleanup",
+                            "Fishing Net Recovery"
+                        ]
+                    },
+                    "required": true
+                },
+                {
+                    "name": "processingFacility",
+                    "title": "Processing Facility Details",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "description": "Tons per year"
+                        },
+                        "certifications": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "expectedAnnualCollection",
+                    "title": "Expected Annual Collection (metric tons)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "disposalMethod",
+                    "title": "Disposal/Recycling Method",
+                    "type": "enum",
+                    "enum": [
+                        "Recycling",
+                        "Upcycling",
+                        "Safe Disposal",
+                        "Energy Recovery (Non-Incineration)"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "emissionFactorAverted",
+                    "title": "Emission Factor Averted (tCO2/ton plastic)",
+                    "type": "number",
+                    "description": "Emissions prevented by avoiding incineration",
+                    "required": true,
+                    "default": 2.5
+                }
+            ]
+        },
+        {
+            "name": "PlasticCollectionData",
+            "description": "Plastic collection and measurement data",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "collectionPeriodStart",
+                    "title": "Collection Period Start",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "collectionPeriodEnd",
+                    "title": "Collection Period End",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "collectionEvents",
+                    "title": "Collection Events",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "eventDate": {
+                                "type": "date"
+                            },
+                            "location": {
+                                "type": "string"
+                            },
+                            "plasticType": {
+                                "type": "enum",
+                                "enum": [
+                                    "PET",
+                                    "HDPE",
+                                    "PVC",
+                                    "LDPE",
+                                    "PP",
+                                    "PS",
+                                    "Mixed"
+                                ]
+                            },
+                            "weightCollected": {
+                                "type": "number",
+                                "description": "Kilograms"
+                            },
+                            "volumeCollected": {
+                                "type": "number",
+                                "description": "Cubic meters"
+                            },
+                            "numberOfParticipants": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "totalPlasticCollected",
+                    "title": "Total Plastic Collected (metric tons)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "plasticBreakdown",
+                    "title": "Plastic Type Breakdown",
+                    "type": "object",
+                    "properties": {
+                        "PET": {
+                            "type": "number"
+                        },
+                        "HDPE": {
+                            "type": "number"
+                        },
+                        "PVC": {
+                            "type": "number"
+                        },
+                        "LDPE": {
+                            "type": "number"
+                        },
+                        "PP": {
+                            "type": "number"
+                        },
+                        "PS": {
+                            "type": "number"
+                        },
+                        "Mixed": {
+                            "type": "number"
+                        }
+                    }
+                },
+                {
+                    "name": "weighingRecords",
+                    "title": "Weighing Records",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "recordId": {
+                                "type": "string"
+                            },
+                            "date": {
+                                "type": "date"
+                            },
+                            "weight": {
+                                "type": "number"
+                            },
+                            "scaleSerialNumber": {
+                                "type": "string"
+                            },
+                            "witnessName": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                {
+                    "name": "calculatedEmissionsAverted",
+                    "title": "Calculated Emissions Averted (tCO2)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "evidencePhotos",
+                    "title": "Collection Evidence Photos (IPFS Hashes)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "required": true
+                },
+                {
+                    "name": "gpsTrackingData",
+                    "title": "GPS Tracking Data (IPFS Hash)",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "NonIncinerationVerification",
+            "description": "Verification that plastic was not incinerated",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "verificationPartner",
+                    "title": "Verification Partner Organization",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "verificationDate",
+                    "title": "Verification Date",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "plasticDestination",
+                    "title": "Plastic Destination",
+                    "type": "enum",
+                    "enum": [
+                        "Recycling Facility",
+                        "Upcycling Facility",
+                        "Certified Landfill",
+                        "Other Non-Incineration"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "facilityName",
+                    "title": "Receiving Facility Name",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "facilityLocation",
+                    "title": "Facility Location",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "transferReceipts",
+                    "title": "Transfer Receipts (IPFS Hashes)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "required": true
+                },
+                {
+                    "name": "facilityInspectionReport",
+                    "title": "Facility Inspection Report (IPFS Hash)",
+                    "type": "string"
+                },
+                {
+                    "name": "chainOfCustodyVerified",
+                    "title": "Chain of Custody Verified",
+                    "type": "boolean",
+                    "required": true
+                },
+                {
+                    "name": "verificationStatus",
+                    "title": "Verification Status",
+                    "type": "enum",
+                    "enum": [
+                        "Verified",
+                        "Rejected",
+                        "Pending Additional Evidence"
+                    ],
+                    "required": true
+                }
+            ]
+        },
+        {
+            "name": "PlasticRemovalAuditReport",
+            "description": "Third-party audit of plastic removal claims",
+            "entity": "VC",
+            "fields": [
+                {
+                    "name": "auditorName",
+                    "title": "Auditor Name",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "auditDate",
+                    "title": "Audit Date",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "name": "verifiedPlasticWeight",
+                    "title": "Verified Plastic Weight (metric tons)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "verifiedEmissionsAverted",
+                    "title": "Verified Emissions Averted (tCO2)",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0
+                },
+                {
+                    "name": "discrepancies",
+                    "title": "Discrepancies Found",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "issue": {
+                                "type": "string"
+                            },
+                            "severity": {
+                                "type": "enum",
+                                "enum": [
+                                    "Minor",
+                                    "Major",
+                                    "Critical"
+                                ]
+                            },
+                            "resolution": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "samplingMethodology",
+                    "title": "Sampling Methodology",
+                    "type": "string"
+                },
+                {
+                    "name": "findings",
+                    "title": "Audit Findings",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "recommendations",
+                    "title": "Recommendations",
+                    "type": "string"
+                },
+                {
+                    "name": "approvalStatus",
+                    "title": "Approval Status",
+                    "type": "enum",
+                    "enum": [
+                        "Approved",
+                        "Rejected",
+                        "Conditional"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "auditReportDocument",
+                    "title": "Audit Report Document (IPFS Hash)",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "policyWorkflow": {
+        "blocks": [
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "init",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "defaultActive": true,
+                "children": [
+                    {
+                        "blockType": "informationBlock",
+                        "tag": "header",
+                        "title": "OPR-v1 Ocean Plastic Removal Policy",
+                        "description": "This policy manages verification and issuance of carbon credits from ocean plastic removal and prevention of incineration."
+                    }
+                ]
+            },
+            {
+                "blockType": "policyRolesBlock",
+                "tag": "choose_role",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "defaultActive": true,
+                "roles": [
+                    {
+                        "name": "Collection Organization",
+                        "description": "Organization collecting ocean plastic"
+                    },
+                    {
+                        "name": "Verification Partner",
+                        "description": "Partner verifying non-incineration"
+                    },
+                    {
+                        "name": "Auditor",
+                        "description": "Third-party auditor of collection claims"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "collection_org_container",
+                "permissions": [
+                    "Collection Organization"
+                ],
+                "defaultActive": true,
+                "children": [
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "plastic_project_registration",
+                        "title": "Register Plastic Removal Project",
+                        "description": "Submit project registration and operational details",
+                        "schema": "PlasticRemovalProjectRegistration",
+                        "idType": "DID"
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_plastic_registration",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "collection_data_container",
+                "permissions": [
+                    "Collection Organization"
+                ],
+                "defaultActive": true,
+                "dependencies": [
+                    "plastic_project_registration"
+                ],
+                "children": [
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "plastic_collection_submission",
+                        "title": "Submit Plastic Collection Data",
+                        "description": "Submit collection events and weighing records",
+                        "schema": "PlasticCollectionData",
+                        "idType": "OWNER"
+                    },
+                    {
+                        "blockType": "calculateContainerBlock",
+                        "tag": "calculate_emissions_averted",
+                        "inputFields": [
+                            {
+                                "name": "plasticWeight",
+                                "value": "document.credentialSubject.0.totalPlasticCollected"
+                            },
+                            {
+                                "name": "emissionFactor",
+                                "value": "2.5"
+                            }
+                        ],
+                        "outputFields": [
+                            {
+                                "name": "emissionsAverted",
+                                "formula": "plasticWeight * emissionFactor"
+                            }
+                        ]
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_collection_data",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "verification_partner_container",
+                "permissions": [
+                    "Verification Partner"
+                ],
+                "defaultActive": true,
+                "dependencies": [
+                    "plastic_collection_submission"
+                ],
+                "children": [
+                    {
+                        "blockType": "documentsSourceAddon",
+                        "tag": "collection_source",
+                        "dataType": "vc-documents",
+                        "filters": {
+                            "schema": "PlasticCollectionData"
+                        }
+                    },
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "non_incineration_verification",
+                        "title": "Verify Non-Incineration",
+                        "description": "Verify plastic was not incinerated and provide chain of custody",
+                        "schema": "NonIncinerationVerification",
+                        "idType": "DID"
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_verification",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "interfaceContainerBlock",
+                "tag": "auditor_review_container",
+                "permissions": [
+                    "Auditor"
+                ],
+                "defaultActive": true,
+                "dependencies": [
+                    "non_incineration_verification"
+                ],
+                "children": [
+                    {
+                        "blockType": "documentsSourceAddon",
+                        "tag": "all_documents_source",
+                        "dataType": "vc-documents"
+                    },
+                    {
+                        "blockType": "requestVcDocumentBlock",
+                        "tag": "plastic_audit_submission",
+                        "title": "Submit Plastic Removal Audit",
+                        "description": "Review collection data and verification, submit audit findings",
+                        "schema": "PlasticRemovalAuditReport",
+                        "idType": "DID"
+                    },
+                    {
+                        "blockType": "sendToGuardianBlock",
+                        "tag": "send_plastic_audit",
+                        "dataType": "vc-documents"
+                    }
+                ]
+            },
+            {
+                "blockType": "aggregateDocumentBlock",
+                "tag": "aggregate_plastic_verification",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "dataType": "vc-documents",
+                "dependencies": [
+                    "plastic_audit_submission"
+                ],
+                "children": [
+                    {
+                        "blockType": "filtersAddon",
+                        "tag": "approval_filter",
+                        "filters": [
+                            {
+                                "field": "document.credentialSubject.0.approvalStatus",
+                                "type": "equal",
+                                "value": "Approved"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "blockType": "mintDocumentBlock",
+                "tag": "mint_plastic_credits",
+                "permissions": [
+                    "Standard Registry"
+                ],
+                "dependencies": [
+                    "aggregate_plastic_verification"
+                ],
+                "tokenId": "${OPR_CARBON_CREDIT_TOKEN_ID}",
+                "rule": "FIRST",
+                "amount": "document.credentialSubject.0.verifiedEmissionsAverted",
+                "accountId": "document.issuer",
+                "accountType": "DID"
+            }
+        ]
+    },
+    "tokenConfig": {
+        "tokenName": "Ocean Plastic Removal Credit",
+        "tokenSymbol": "OPR-CC",
+        "tokenType": "fungible",
+        "decimals": 2,
+        "initialSupply": 0,
+        "enableAdmin": true,
+        "enableKYC": false,
+        "enableFreeze": false,
+        "enableWipe": true
+    }
+}

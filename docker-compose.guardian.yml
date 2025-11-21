@@ -1,0 +1,207 @@
+version: '3.8'
+
+services:
+  # MongoDB for Guardian
+  mongo-guardian:
+    image: mongo:6.0
+    container_name: guardian-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: guardian
+      MONGO_INITDB_ROOT_PASSWORD: guardian123
+      MONGO_INITDB_DATABASE: guardian_db
+    ports:
+      - "27018:27017"
+    volumes:
+      - guardian_mongo_data:/data/db
+      - guardian_mongo_config:/data/configdb
+    networks:
+      - guardian-network
+    command: --wiredTigerCacheSizeGB 2
+
+  # IPFS Node for document storage
+  ipfs-node:
+    image: ipfs/kubo:latest
+    container_name: guardian-ipfs
+    restart: unless-stopped
+    environment:
+      - IPFS_PROFILE=server
+    ports:
+      - "5001:5001"  # API
+      - "8080:8080"  # Gateway
+      - "4001:4001"  # Swarm
+    volumes:
+      - guardian_ipfs_data:/data/ipfs
+      - guardian_ipfs_staging:/export
+    networks:
+      - guardian-network
+
+  # NATS Message Broker
+  message-broker:
+    image: nats:2.9-alpine
+    container_name: guardian-message-broker
+    restart: unless-stopped
+    ports:
+      - "4222:4222"  # Client connections
+      - "6222:6222"  # Cluster connections
+      - "8222:8222"  # HTTP monitoring
+    networks:
+      - guardian-network
+    command: [
+      "-js",  # Enable JetStream
+      "-m", "8222",  # Monitoring port
+      "--store_dir=/data"
+    ]
+    volumes:
+      - guardian_nats_data:/data
+
+  # Guardian Logger Service
+  logger-service:
+    image: gcr.io/hedera-registry/logger-service:latest
+    container_name: guardian-logger-service
+    restart: unless-stopped
+    depends_on:
+      - mongo-guardian
+      - message-broker
+    environment:
+      - MONGO_HOST=mongo-guardian
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=guardian
+      - MONGO_PASSWORD=guardian123
+      - MONGO_DATABASE=guardian_db
+      - MESSAGE_BROKER_CHANNEL=guardian.logger
+      - SERVICE_CHANNEL=logger-service
+    networks:
+      - guardian-network
+
+  # Guardian Auth Service
+  auth-service:
+    image: gcr.io/hedera-registry/auth-service:latest
+    container_name: guardian-auth-service
+    restart: unless-stopped
+    depends_on:
+      - mongo-guardian
+      - message-broker
+    environment:
+      - MONGO_HOST=mongo-guardian
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=guardian
+      - MONGO_PASSWORD=guardian123
+      - MONGO_DATABASE=guardian_db
+      - MESSAGE_BROKER_CHANNEL=guardian.auth
+      - SERVICE_CHANNEL=auth-service
+      - ACCESS_TOKEN_SECRET=${GUARDIAN_ACCESS_TOKEN_SECRET:-guardian-access-secret-change-in-production}
+      - REFRESH_TOKEN_SECRET=${GUARDIAN_REFRESH_TOKEN_SECRET:-guardian-refresh-secret-change-in-production}
+    networks:
+      - guardian-network
+
+  # Guardian Worker Service (background jobs)
+  worker-service:
+    image: gcr.io/hedera-registry/worker-service:latest
+    container_name: guardian-worker-service
+    restart: unless-stopped
+    depends_on:
+      - mongo-guardian
+      - message-broker
+      - ipfs-node
+    environment:
+      - MONGO_HOST=mongo-guardian
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=guardian
+      - MONGO_PASSWORD=guardian123
+      - MONGO_DATABASE=guardian_db
+      - MESSAGE_BROKER_CHANNEL=guardian.worker
+      - SERVICE_CHANNEL=worker-service
+      - IPFS_NODE_ADDRESS=http://ipfs-node:5001
+      - HEDERA_NET=${HEDERA_NETWORK:-testnet}
+      - OPERATOR_ID=${HEDERA_OPERATOR_ID}
+      - OPERATOR_KEY=${HEDERA_OPERATOR_KEY}
+    networks:
+      - guardian-network
+
+  # Guardian Main Service (API & Core Logic)
+  guardian-service:
+    image: gcr.io/hedera-registry/guardian-service:latest
+    container_name: guardian-service
+    restart: unless-stopped
+    depends_on:
+      - mongo-guardian
+      - message-broker
+      - ipfs-node
+      - auth-service
+      - worker-service
+      - logger-service
+    ports:
+      - "3002:3002"  # API Port
+    environment:
+      - MONGO_HOST=mongo-guardian
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=guardian
+      - MONGO_PASSWORD=guardian123
+      - MONGO_DATABASE=guardian_db
+      - MESSAGE_BROKER_CHANNEL=guardian
+      - SERVICE_CHANNEL=guardian-service
+      - IPFS_NODE_ADDRESS=http://ipfs-node:5001
+      - IPFS_PUBLIC_GATEWAY=http://localhost:8080/ipfs/${IPFS_CID}
+      - HEDERA_NET=${HEDERA_NETWORK:-testnet}
+      - OPERATOR_ID=${HEDERA_OPERATOR_ID}
+      - OPERATOR_KEY=${HEDERA_OPERATOR_KEY}
+      - INITIALIZATION_TOPIC_ID=${GUARDIAN_INITIALIZATION_TOPIC_ID:-}
+      - GUARDIAN_ENV=docker
+      - LOG_LEVEL=info
+      - MRV_ADDRESS=0.0.0.0:3005
+      - WEB_SOCKET_ENABLED=true
+    networks:
+      - guardian-network
+    volumes:
+      - guardian_service_logs:/app/logs
+
+  # Guardian API Gateway (optional - for production)
+  api-gateway:
+    image: gcr.io/hedera-registry/api-gateway:latest
+    container_name: guardian-api-gateway
+    restart: unless-stopped
+    depends_on:
+      - guardian-service
+    ports:
+      - "3000:3000"
+    environment:
+      - GUARDIAN_SERVICE_URL=http://guardian-service:3002
+    networks:
+      - guardian-network
+
+  # Guardian MRV Sender (for external MRV data submission)
+  mrv-sender:
+    image: gcr.io/hedera-registry/mrv-sender:latest
+    container_name: guardian-mrv-sender
+    restart: unless-stopped
+    depends_on:
+      - guardian-service
+    ports:
+      - "3005:3005"
+    environment:
+      - GUARDIAN_SERVICE_URL=http://guardian-service:3002
+      - MESSAGE_BROKER_CHANNEL=guardian.mrv
+    networks:
+      - guardian-network
+
+volumes:
+  guardian_mongo_data:
+    driver: local
+  guardian_mongo_config:
+    driver: local
+  guardian_ipfs_data:
+    driver: local
+  guardian_ipfs_staging:
+    driver: local
+  guardian_nats_data:
+    driver: local
+  guardian_service_logs:
+    driver: local
+
+networks:
+  guardian-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

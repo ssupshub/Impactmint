@@ -17,7 +17,8 @@ const LandingPage: React.FC = () => {
     });
 
     useEffect(() => {
-        setIsVisible(true);
+        const timer = setTimeout(() => setIsVisible(true), 100);
+        return () => clearTimeout(timer);
     }, []);
 
     return (

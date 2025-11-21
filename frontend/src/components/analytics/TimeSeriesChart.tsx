@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -9,10 +9,12 @@ import {
     Tooltip,
     Legend,
     Filler,
+    type TooltipItem,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useTimelineData } from '../../hooks/useAnalytics';
 import { format } from 'date-fns';
+
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -23,11 +25,19 @@ ChartJS.register(
     Legend,
     Filler
 );
+
 const TimeSeriesChart: React.FC = () => {
+    // Use useState lazy initializer to avoid impure Date.now() in render
+    const [dateRange] = useState(() => ({
+        start: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+        end: new Date()
+    }));
+
     const { data: timeline, isLoading } = useTimelineData(
-        new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
-        new Date()
+        dateRange.start,
+        dateRange.end
     );
+
     const chartData = useMemo(() => {
         if (!timeline) return null;
         return {
@@ -52,6 +62,7 @@ const TimeSeriesChart: React.FC = () => {
             ],
         };
     }, [timeline]);
+
     const options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -65,8 +76,9 @@ const TimeSeriesChart: React.FC = () => {
             },
             tooltip: {
                 callbacks: {
-                    label: (context: any) => {
-                        return `${context.dataset.label}: ${context.parsed.y.toFixed(2)} tons`;
+                    label: (context: TooltipItem<'line'>) => {
+                        const value = context.parsed.y ?? 0;
+                        return `${context.dataset.label}: ${value.toFixed(2)} tons`;
                     },
                 },
             },
@@ -81,6 +93,7 @@ const TimeSeriesChart: React.FC = () => {
             },
         },
     };
+
     if (isLoading || !chartData) {
         return (
             <div className="bg-white rounded-lg shadow p-6 h-96 flex items-center justify-center">
@@ -88,6 +101,7 @@ const TimeSeriesChart: React.FC = () => {
             </div>
         );
     }
+
     return (
         <div className="bg-white rounded-lg shadow p-6">
             <div className="h-96">
@@ -96,4 +110,5 @@ const TimeSeriesChart: React.FC = () => {
         </div>
     );
 };
+
 export default TimeSeriesChart;

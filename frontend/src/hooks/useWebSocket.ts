@@ -16,22 +16,26 @@ export const useWebSocket = () => {
             console.log('WebSocket connected');
         });
 
-        newSocket.on('analytics:update', (data) => {
+        newSocket.on('analytics:update', () => {
             // Invalidate queries to refetch data
             queryClient.invalidateQueries({ queryKey: ['analytics'] });
         });
 
-        newSocket.on('credit:minted', (data) => {
+        newSocket.on('credit:minted', () => {
             queryClient.invalidateQueries({ queryKey: ['analytics', 'overview'] });
         });
 
-        newSocket.on('credit:retired', (data) => {
+        newSocket.on('credit:retired', () => {
             queryClient.invalidateQueries({ queryKey: ['analytics', 'overview'] });
         });
 
-        setSocket(newSocket);
+        // Use setTimeout to avoid synchronous state update warning in useEffect
+        const timer = setTimeout(() => {
+            setSocket(newSocket);
+        }, 0);
 
         return () => {
+            clearTimeout(timer);
             newSocket.close();
         };
     }, [queryClient]);

@@ -17,25 +17,18 @@ interface Transaction {
 
 const TransactionExplorer: React.FC = () => {
     const socket = useWebSocket();
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([
+        {
+            id: '1',
+            type: 'mint',
+            tokenId: '0.0.12345',
+            serialNumber: 1,
+            timestamp: new Date(),
+            transactionId: '0.0.12345@1234567890.123456789',
+            status: 'confirmed',
+        },
+    ]);
     const [filter, setFilter] = useState<string>('all');
-
-    useEffect(() => {
-        // Load initial transactions
-        // TODO: Fetch from API
-        const mockTransactions: Transaction[] = [
-            {
-                id: '1',
-                type: 'mint',
-                tokenId: '0.0.12345',
-                serialNumber: 1,
-                timestamp: new Date(),
-                transactionId: '0.0.12345@1234567890.123456789',
-                status: 'confirmed',
-            },
-        ];
-        setTransactions(mockTransactions);
-    }, []);
 
     useEffect(() => {
         if (!socket) return;

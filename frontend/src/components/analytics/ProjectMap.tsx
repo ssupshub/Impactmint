@@ -60,7 +60,7 @@ const ProjectMap: React.FC = () => {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     />
                     {projectsArray.length > 0 ? (
-                        projectsArray.map((project: any) => (
+                        projectsArray.map((project: { _id: string; name: string; methodology: string; status: string; capacity: number; nftCount?: number; location?: { coordinates?: { latitude: number; longitude: number } } }) => (
                             <Marker
                                 key={project._id}
                                 position={[

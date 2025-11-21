@@ -30,7 +30,7 @@ const LandingPage: React.FC = () => {
                     <div className="absolute bottom-20 left-20 w-96 h-96 bg-secondary-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
                 </div>
 
-                <div className="container relative z-10 mx-auto px-6 max-w-7xl">
+                <div className="container relative z-10 mx-auto px-6 max-w-7xl w-full">
                     <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         {/* Badge */}
                         <div className="inline-block mb-8 px-6 py-2 rounded-full glass border border-primary-500/30 shadow-glow-sm">
@@ -101,7 +101,7 @@ const LandingPage: React.FC = () => {
 
             {/* Features Section */}
             <section className="py-24 bg-gray-900/50 backdrop-blur-sm relative">
-                <div className="container mx-auto px-6 max-w-7xl">
+                <div className="container mx-auto px-6 max-w-7xl w-full">
                     <div className="text-center mb-20">
                         <div className="inline-block mb-4 px-4 py-2 rounded-full bg-primary-900/30 border border-primary-500/20 text-primary-400 font-semibold text-sm uppercase tracking-wider">
                             ✨ Premium Features
@@ -159,7 +159,7 @@ const LandingPage: React.FC = () => {
 
             {/* CTA Section */}
             <section className="py-24 bg-gradient-to-r from-primary-900/80 to-secondary-900/80 backdrop-blur-md border-t border-white/10">
-                <div className="container mx-auto px-6 text-center max-w-4xl">
+                <div className="container mx-auto px-6 text-center max-w-4xl w-full">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                         Ready to Make an <span className="text-primary-400">Impact</span>?
                     </h2>

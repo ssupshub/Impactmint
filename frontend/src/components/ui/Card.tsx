@@ -3,7 +3,7 @@ import React from 'react';
 export interface CardProps {
     children: React.ReactNode;
     variant?: 'default' | 'glass' | 'gradient';
-    padding?: 'sm' | 'md' | 'lg' | 'xl';
+    padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
     hover?: boolean;
     className?: string;
 }
@@ -24,6 +24,7 @@ const Card: React.FC<CardProps> = ({
     };
 
     const paddings = {
+        none: 'p-0',
         sm: 'p-4',
         md: 'p-6',
         lg: 'p-8',

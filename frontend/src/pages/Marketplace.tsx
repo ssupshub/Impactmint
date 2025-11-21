@@ -61,33 +61,156 @@ const Marketplace: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                            <Card key={item} hover padding="sm" className="flex flex-col h-full">
-                                <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-lg mb-3 relative">
+                        {[
+                            {
+                                id: 101,
+                                name: "Amazon Rainforest Protection",
+                                location: "Brazil",
+                                type: "Forestry",
+                                vintage: 2023,
+                                price: 150,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #166534 0%, #15803d 100%)",
+                                verified: true,
+                                badge: "Best Seller"
+                            },
+                            {
+                                id: 102,
+                                name: "Solar Power Project Gujarat",
+                                location: "India",
+                                type: "Renewable Energy",
+                                vintage: 2024,
+                                price: 45,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
+                                verified: true,
+                                badge: "New"
+                            },
+                            {
+                                id: 103,
+                                name: "Blue Carbon Mangrove Restoration",
+                                location: "Kenya",
+                                type: "Blue Carbon",
+                                vintage: 2022,
+                                price: 210,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
+                                verified: true,
+                                badge: "Premium"
+                            },
+                            {
+                                id: 104,
+                                name: "Clean Cookstoves Initiative",
+                                location: "Rwanda",
+                                type: "Community",
+                                vintage: 2023,
+                                price: 85,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                                verified: true,
+                                badge: null
+                            },
+                            {
+                                id: 105,
+                                name: "Wind Farm Expansion",
+                                location: "Turkey",
+                                type: "Renewable Energy",
+                                vintage: 2024,
+                                price: 55,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #6366f1 0%, #818cf8 100%)",
+                                verified: true,
+                                badge: "Trending"
+                            },
+                            {
+                                id: 106,
+                                name: "Peatland Conservation",
+                                location: "Indonesia",
+                                type: "Forestry",
+                                vintage: 2021,
+                                price: 120,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #3f6212 0%, #65a30d 100%)",
+                                verified: true,
+                                badge: null
+                            },
+                            {
+                                id: 107,
+                                name: "Biogas Capture Project",
+                                location: "Vietnam",
+                                type: "Methane Capture",
+                                vintage: 2023,
+                                price: 95,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
+                                verified: true,
+                                badge: null
+                            },
+                            {
+                                id: 108,
+                                name: "Reforestation & Biodiversity",
+                                location: "Costa Rica",
+                                type: "Forestry",
+                                vintage: 2024,
+                                price: 180,
+                                currency: "HBAR",
+                                image: "linear-gradient(135deg, #15803d 0%, #4ade80 100%)",
+                                verified: true,
+                                badge: "Rare"
+                            }
+                        ].map((item) => (
+                            <Card key={item.id} hover padding="none" className="flex flex-col h-full overflow-hidden border border-gray-100 dark:border-gray-800 group">
+                                <div 
+                                    className="h-40 relative overflow-hidden"
+                                    style={{ background: item.image }}
+                                >
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300"></div>
+                                    
+                                    {item.badge && (
+                                        <div className="absolute top-2 left-2">
+                                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white bg-black/30 backdrop-blur-md rounded border border-white/10">
+                                                {item.badge}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     <div className="absolute top-2 right-2">
-                                        <Badge variant="info" size="sm" rounded>NFT</Badge>
+                                        <Badge variant="info" size="sm" rounded className="shadow-sm backdrop-blur-md bg-white/90 dark:bg-black/50">
+                                            NFT
+                                        </Badge>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-primary-600 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded">
-                                        VCS Verified
-                                    </span>
-                                    <span className="text-xs text-gray-500">Vintage 2024</span>
-                                </div>
-                                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1 truncate">
-                                    Amazon Rainforest Protection
-                                </h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                                    Brazil • Forestry
-                                </p>
-                                <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                                    <div>
-                                        <div className="text-xs text-gray-500">Price</div>
-                                        <div className="text-base font-bold text-gray-900 dark:text-white">150 HBAR</div>
+
+                                <div className="p-4 flex flex-col flex-1">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-[10px] font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded border border-primary-100 dark:border-primary-900/30">
+                                            VCS Verified
+                                        </span>
+                                        <span className="text-[10px] text-gray-500 border border-gray-200 dark:border-gray-700 px-2 py-0.5 rounded">
+                                            Vintage {item.vintage}
+                                        </span>
                                     </div>
-                                    <button className="px-3 py-1.5 bg-primary-500 text-white text-xs font-medium rounded hover:bg-primary-600 transition">
-                                        Buy Now
-                                    </button>
+
+                                    <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1 truncate group-hover:text-primary-500 transition-colors">
+                                        {item.name}
+                                    </h3>
+                                    
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-1">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                        {item.location} • {item.type}
+                                    </p>
+
+                                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                        <div>
+                                            <div className="text-[10px] text-gray-500 uppercase tracking-wider">Price</div>
+                                            <div className="text-base font-bold text-gray-900 dark:text-white">
+                                                {item.price} <span className="text-xs font-normal text-gray-500">{item.currency}</span>
+                                            </div>
+                                        </div>
+                                        <button className="px-3 py-1.5 bg-primary-500 text-white text-xs font-bold uppercase tracking-wide rounded hover:bg-primary-600 transition shadow-sm hover:shadow-md hover:-translate-y-0.5 transform duration-200">
+                                            Buy Now
+                                        </button>
+                                    </div>
                                 </div>
                             </Card>
                         ))}

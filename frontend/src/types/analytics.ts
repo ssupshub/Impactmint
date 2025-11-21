@@ -11,6 +11,8 @@ export interface OverviewMetrics {
     totalMRVSubmissions: number;
     calculatedCredits: number;
     marketplaceVolume: number;
+    totalNFTs: number;
+    totalRetired: number;
 }
 
 export interface ProjectAnalytics {

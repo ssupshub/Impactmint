@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import app from '../src/server';
-import { connectDatabase } from '../src/config/database';
+import app from '../backend/src/server';
+import { connectDatabase } from '../backend/src/config/database';
 
 // Initialize database connection
 let isConnected = false;

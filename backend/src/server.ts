@@ -132,7 +132,9 @@ process.on('uncaughtException', (error: Error) => {
   process.exit(1);
 });
 
-// Start the server
-startServer();
+// Start the server if executed directly
+if (require.main === module) {
+  startServer();
+}
 
 export default app;
